@@ -33,6 +33,7 @@ APP_TIMER_DEF(m_chrg_timer);
 
 const float cr2032_voltage_map[] = {2.9, 2.8, 2.7, 2.6, 2.5, 2.4, 2.3, 2.1, 2.0f};
 const float lipo_voltage_map[] = {4.1, 3.98, 3.92, 3.87, 3.8, 3.7, 3.6, 3.5, 3.4};
+//const float lipo_voltage_map[] = { 4100, 3980, 3920, 3870, 3800, 3700, 3600, 3500, 3400};
 
 #define BAT_LEVEL_NUM 9
 
@@ -63,9 +64,9 @@ bool get_stats(void) {
 void chrg_init(void) {
     ret_code_t err_code;
 
-    if (settings_get_data()->bat_mode) {
-        nrf_gpio_cfg_input(CHRG_PIN, NRF_GPIO_PIN_PULLUP);
-    }
+    // if (settings_get_data()->bat_mode) {
+    //     nrf_gpio_cfg_input(CHRG_PIN, NRF_GPIO_PIN_PULLUP);
+    // }
 
     // measure once
     bat_measure(&chrg);
@@ -102,10 +103,18 @@ void bat_measure(chrg_data_t *p_chrg) {
     nrf_saadc_value_t adc_value;
     ret_code_t err_code;
 
+    
+    // enable bat check  adc_en
+    nrf_gpio_cfg_output(3); 
+	nrf_gpio_pin_set(3);
+    //nrf_delay_us(1000);
+
     saadc_init();
     err_code = nrfx_saadc_sample_convert(ADC_CHANNEL, &adc_value);
     APP_ERROR_CHECK(err_code);
     saadc_uninit();
+
+    nrf_gpio_pin_clear(3);
 
     const float *p_voltage_map = NULL;
     float voltage = 0.0f;
@@ -114,7 +123,9 @@ void bat_measure(chrg_data_t *p_chrg) {
     // lipo mode
     if (settings_get_data()->bat_mode) {
         p_voltage_map = lipo_voltage_map;
-        voltage = 3.6f / 1024 * adc_value * 1.451f;
+        voltage = (uint32_t)(adc_value *225) >> 5;
+        voltage = (float)voltage / 1000;
+        //voltage = 3.6f / 1024 * adc_value * 1.451f;
     } else { // cr2032 mode
         p_voltage_map = cr2032_voltage_map;
         voltage = 3.6f / 1024 * adc_value;
@@ -132,5 +143,5 @@ void bat_measure(chrg_data_t *p_chrg) {
 
     p_chrg->level = level;
     p_chrg->voltage = voltage;
-    p_chrg->stats = nrf_gpio_pin_read(CHRG_PIN);
+    p_chrg->stats = 1;
 }
