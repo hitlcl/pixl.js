@@ -2,7 +2,7 @@ PROJECT_NAME     := secure_bootloader_ble_s112_pca10040
 TARGETS          := bootloader
 OUTPUT_DIRECTORY := ../_build
 
-SDK_ROOT := $(NRF52_SDK_ROOT)
+SDK_ROOT := D:/dev/SDKs/nRF5_SDK_17.1.0_ddde560
 PROJ_DIR := ./src
 BOARD ?= LCD
 

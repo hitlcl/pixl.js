@@ -2,7 +2,7 @@ PROJECT_NAME     := ble_app_blinky_pca10040_s132
 TARGETS          := pixljs
 OUTPUT_DIRECTORY := ../_build
 
-SDK_ROOT := $(NRF52_SDK_ROOT)
+SDK_ROOT := D:/dev/SDKs/nRF5_SDK_17.1.0_ddde560
 PROJ_DIR := ./src
 COMP_DIR := ../components
 U8G2_ROOT := ../components/u8g2/csrc
@@ -715,7 +715,7 @@ sdk_config:
 	java -jar $(CMSIS_CONFIG_TOOL) $(SDK_CONFIG_FILE)
 
 version:
-	@cd ../ && python3 scripts/version_gen.py
+	@cd ../ && python scripts/version_gen.py
 	@echo build: BOARD=$(BOARD) RELEASE=$(RELEASE) APP_VERSION=$(APP_VERSION)
 
 settingsgen:
